@@ -36,7 +36,7 @@ By keeping the domain simple, all architectural focus remains on:
 - **SOLID principles** applied practically without academic bloat.
 - **Modern .NET 10 & C# 14 idioms**: `global.json` with Microsoft.Testing.Platform runner, C# 14 language constructs, Central Package Management (`Directory.Packages.props`), and `.slnx` solution format.
 - **Compile-Time Mediator (`martinothamar/Mediator`)**: A 100% MIT-licensed, Native AOT-ready, `ValueTask`-based alternative to MediatR that replaces runtime reflection with compile-time Roslyn source generation.
-- **Production-Grade Testing**: 76 automated tests across Unit, Integration (isolated SQLite per test), and Architecture test suites.
+- **Production-Grade Testing**: 79 automated tests across Unit, Integration (isolated SQLite per test), and Architecture test suites.
 
 A sibling repository (`clean-architecture-cqrs-from-scratch`) implements the exact same domain with a hand-written dispatcher. This showcase serves as the authoritative reference for using an open-source mediator library **the right way** within Clean Architecture.
 
@@ -62,8 +62,9 @@ dotnet run --project src/CleanArchitectureMediatorShowcase.WebAPI
 
 ### 3. Explore Interactive API Documentation
 Open your browser to:
-- **Scalar API Reference**: [http://localhost:5000/scalar](http://localhost:5000/scalar)
-- **OpenAPI v3 JSON**: [http://localhost:5000/openapi/v1.json](http://localhost:5000/openapi/v1.json)
+- **Interactive UI (Redirects to Scalar)**: [http://localhost:5000](http://localhost:5000) or [http://localhost:5000/scalar](http://localhost:5000/scalar)
+- **Direct Scalar API Reference**: [http://localhost:5000/scalar/v1](http://localhost:5000/scalar/v1)
+- **OpenAPI v3 JSON Specification**: [http://localhost:5000/openapi/v1.json](http://localhost:5000/openapi/v1.json)
 - **Liveness Health Check**: [http://localhost:5000/health](http://localhost:5000/health)
 - **Readiness Health Check (DB connectivity)**: [http://localhost:5000/health/ready](http://localhost:5000/health/ready)
 
@@ -71,7 +72,7 @@ Open your browser to:
 ```bash
 dotnet test CleanArchitectureMediatorShowcase.slnx -c Release
 ```
-*(Executes all 76 unit, integration, and architecture tests in seconds via Microsoft.Testing.Platform)*.
+*(Executes all 79 unit, integration, and architecture tests in seconds via Microsoft.Testing.Platform)*.
 
 ---
 
@@ -301,7 +302,7 @@ All commands were run against the live codebase on .NET 10 (`10.0.403`):
 | :--- | :--- | :--- |
 | `dotnet restore` | Restore NuGet packages across CPM | **Passed** (0 warnings, 0 errors) |
 | `dotnet build -c Release --no-restore` | Solution build with `TreatWarningsAsErrors=true` | **Passed** (0 warnings, 0 errors) |
-| `dotnet test -c Release --no-build` | Automated test suite (MTP runner) | **Passed** (76 tests: 53 Unit, 12 Integration, 11 Architecture) |
+| `dotnet test -c Release --no-build` | Automated test suite (MTP runner) | **Passed** (79 tests: 53 Unit, 15 Integration, 11 Architecture) |
 | `dotnet format --verify-no-changes` | Code style, LF line endings, and whitespace check | **Passed** (0 formatting differences) |
 | `dotnet list package --vulnerable --include-transitive` | Security audit across full dependency tree | **Passed** (0 vulnerable packages) |
 
