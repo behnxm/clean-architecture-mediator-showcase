@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>CleanArchitectureMediatorShowcase.ArchitectureTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CleanArchitectureMediatorShowcase.Domain\CleanArchitectureMediatorShowcase.Domain.csproj" />
+    <ProjectReference Include="..\..\src\CleanArchitectureMediatorShowcase.Application\CleanArchitectureMediatorShowcase.Application.csproj" />
+    <ProjectReference Include="..\..\src\CleanArchitectureMediatorShowcase.Infrastructure\CleanArchitectureMediatorShowcase.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\CleanArchitectureMediatorShowcase.WebAPI\CleanArchitectureMediatorShowcase.WebAPI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Shouldly" />
+  </ItemGroup>
+</Project>

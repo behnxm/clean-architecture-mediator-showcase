@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CleanArchitectureMediatorShowcase.Application/CleanArchitectureMediatorShowcase.Application.csproj" />
+    <Project Path="src/CleanArchitectureMediatorShowcase.Domain/CleanArchitectureMediatorShowcase.Domain.csproj" />
+    <Project Path="src/CleanArchitectureMediatorShowcase.Infrastructure/CleanArchitectureMediatorShowcase.Infrastructure.csproj" />
+    <Project Path="src/CleanArchitectureMediatorShowcase.WebAPI/CleanArchitectureMediatorShowcase.WebAPI.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CleanArchitectureMediatorShowcase.ArchitectureTests/CleanArchitectureMediatorShowcase.ArchitectureTests.csproj" />
+    <Project Path="tests/CleanArchitectureMediatorShowcase.IntegrationTests/CleanArchitectureMediatorShowcase.IntegrationTests.csproj" />
+    <Project Path="tests/CleanArchitectureMediatorShowcase.UnitTests/CleanArchitectureMediatorShowcase.UnitTests.csproj" />
+  </Folder>
+</Solution>
