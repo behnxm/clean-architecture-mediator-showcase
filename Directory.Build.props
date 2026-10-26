@@ -15,8 +15,19 @@
       CA1000: Do not declare static members on generic types.
       Justification: The Result<T> pattern and C# 11+ static abstract interface contracts (e.g. IFailureResult<TSelf>)
       require static factory methods and static abstract members on generic types.
+
+      CA1848: Use LoggerMessage delegates for improved performance.
+      Justification: Standard structured logging (ILogger.LogInformation, LogDebug, LogWarning) is utilized for readability
+      and educational clarity across pipeline behaviors and event handlers.
+
+      CA1873: Evaluation of argument may be expensive if logging is disabled.
+      Justification: String interpolations and Type.Name lookups in logging calls are acceptable for this showcase domain.
+
+      CA1859: Change return type of method to concrete type for improved performance.
+      Justification: Domain event dispatcher uses polymorphic INotification? return type to facilitate open-closed extension
+      for future domain event translations.
     -->
-    <NoWarn>$(NoWarn);CA1716;CA1000</NoWarn>
+    <NoWarn>$(NoWarn);CA1716;CA1000;CA1848;CA1873;CA1859</NoWarn>
 
     <!-- Promote NuGet security audit warnings to build errors -->
     <NuGetAudit>true</NuGetAudit>
