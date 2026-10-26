@@ -1,4 +1,4 @@
-# Clean Architecture & Mediator: Technical Interview Reference Guide
+# Clean Architecture & Mediator: Technical Review, Discussions or a Interview Reference Guide
 
 This document prepares senior engineers and architects for technical discussions, system design interviews, and code reviews based on this codebase.
 
