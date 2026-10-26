@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CleanArchitectureMediatorShowcase.Domain\CleanArchitectureMediatorShowcase.Domain.csproj" />
     <ProjectReference Include="..\..\src\CleanArchitectureMediatorShowcase.Application\CleanArchitectureMediatorShowcase.Application.csproj" />
+    <ProjectReference Include="..\..\src\CleanArchitectureMediatorShowcase.Infrastructure\CleanArchitectureMediatorShowcase.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

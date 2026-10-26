@@ -9,6 +9,11 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
+  <!-- Prevent emitted generator files from being included twice in compilation -->
+  <ItemGroup>
+    <Compile Remove="$(CompilerGeneratedFilesOutputPath)\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\CleanArchitectureMediatorShowcase.Application\CleanArchitectureMediatorShowcase.Application.csproj" />
     <ProjectReference Include="..\CleanArchitectureMediatorShowcase.Infrastructure\CleanArchitectureMediatorShowcase.Infrastructure.csproj" />

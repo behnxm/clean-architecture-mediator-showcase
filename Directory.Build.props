@@ -26,8 +26,14 @@
       CA1859: Change return type of method to concrete type for improved performance.
       Justification: Domain event dispatcher uses polymorphic INotification? return type to facilitate open-closed extension
       for future domain event translations.
+
+      CA1707: Identifiers should not contain underscores.
+      Justification: Standard BDD unit test naming convention (Method_Scenario_Outcome) uses underscores for test method readability.
+
+      xUnit1051: Pass TestContext.Current.CancellationToken to async methods.
+      Justification: Test suites in integration and unit tests pass explicit CancellationToken.None or scoped tokens where needed.
     -->
-    <NoWarn>$(NoWarn);CA1716;CA1000;CA1848;CA1873;CA1859</NoWarn>
+    <NoWarn>$(NoWarn);CA1716;CA1000;CA1848;CA1873;CA1859;CA1707;xUnit1051</NoWarn>
 
     <!-- Promote NuGet security audit warnings to build errors -->
     <NuGetAudit>true</NuGetAudit>
