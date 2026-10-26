@@ -12,7 +12,10 @@ public sealed class OpenApiAndHealthIntegrationTests : IClassFixture<CustomWebAp
 
     public OpenApiAndHealthIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateClient(new Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false
+        });
     }
 
     [Fact]
@@ -79,5 +82,28 @@ public sealed class OpenApiAndHealthIntegrationTests : IClassFixture<CustomWebAp
         operationIds.ShouldContain("UpdateProduct");
         operationIds.ShouldContain("AdjustProductStock");
         operationIds.ShouldContain("DeleteProduct");
+    }
+
+    [Fact]
+    public async Task RootRoute_RedirectsToScalar()
+    {
+        var response = await _client.GetAsync("/");
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location?.ToString().ShouldBe("/scalar/v1");
+    }
+
+    [Fact]
+    public async Task ScalarRoute_RedirectsToScalarVersioned()
+    {
+        var response = await _client.GetAsync("/scalar");
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+        response.Headers.Location?.ToString().ShouldBe("/scalar/v1");
+    }
+
+    [Fact]
+    public async Task ScalarV1_ReturnsSuccess()
+    {
+        var response = await _client.GetAsync("/scalar/v1");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 }

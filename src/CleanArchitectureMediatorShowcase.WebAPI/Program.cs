@@ -54,13 +54,20 @@ app.UseStatusCodePages();
 app.UseCors();
 
 // Interactive API documentation
-if (app.Environment.IsDevelopment())
+// Available in Development or when OpenApi:Enabled is configured (default true for local execution)
+var isOpenApiEnabled = app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("OpenApi:Enabled", true);
+
+if (isOpenApiEnabled)
 {
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {
         options.WithTitle("Product Catalog API - Clean Architecture Reference");
     });
+
+    // Root and convenience redirects to Scalar UI
+    app.MapGet("/", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
+    app.MapGet("/scalar", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
 }
 
 // Health check endpoints
