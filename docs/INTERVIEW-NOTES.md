@@ -7,7 +7,7 @@ This document prepares senior engineers and architects for technical discussions
 ### Question 1: Why did you use `martinothamar/Mediator` instead of MediatR or a hand-written dispatcher?
 **Answer:**
 - **License & Legal Safety**: In MediatR 13+, the project transitioned to RPL-1.5 / commercial licensing, creating legal constraints for enterprise commercial software unless using the feature-restricted Community edition. `martinothamar/Mediator` is 100% MIT-licensed.
-- **Compile-Time vs. Runtime Reflection**: Traditional MediatR scans assemblies at startup and constructs runtime delegates via reflection and expression compilation. `martinothamar/Mediator` uses a Roslyn incremental source generator running at build time, emitting direct C# dispatch code in [Mediator.g.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Generated/Mediator.SourceGenerator/Mediator.SourceGenerator.IncrementalMediatorGenerator/Mediator.g.cs).
+- **Compile-Time vs. Runtime Reflection**: Traditional MediatR scans assemblies at startup and constructs runtime delegates via reflection and expression compilation. `martinothamar/Mediator` uses a Roslyn incremental source generator running at build time, emitting direct C# dispatch code in [Mediator.g.cs](../src/CleanArchitectureMediatorShowcase.WebAPI/Generated/Mediator.SourceGenerator/Mediator.SourceGenerator.IncrementalMediatorGenerator/Mediator.g.cs).
 - **Native AOT & ValueTask**: `martinothamar/Mediator` is built for Native AOT and returns `ValueTask`, avoiding heap allocations when handlers complete synchronously.
 - **Comparison to the Hand-Written Dispatcher Repo**: In our sibling repository (`clean-architecture-cqrs-from-scratch`), we wrote custom `ICommandHandler<TCommand, TResult>` interfaces and an in-memory dispatcher. While hand-written dispatchers give 100% control and zero external dependencies, ready-made libraries provide standardized pipeline behaviors, streaming request support, and ecosystem familiarity. Using `martinothamar/Mediator` delivers the benefits of an established library while retaining compile-time safety and zero reflection overhead.
 
@@ -17,14 +17,14 @@ This document prepares senior engineers and architects for technical discussions
 **Answer:**
 - In Clean Architecture, the **Domain layer is the innermost core** of the application. It represents pure business logic and enterprise rules.
 - Coupling the domain layer to a mediator library (for example, making `IDomainEvent` inherit `Mediator.INotification`) causes the domain to be vulnerable to third-party framework breaking changes, licensing shifts, or deprecation.
-- By keeping [Domain](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain) as pure C# (zero packages), we ensure business rules outlive any framework. The Application layer acts as the adapter, translating pure domain events into application notifications via [MediatorDomainEventDispatcher.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Common/Events/MediatorDomainEventDispatcher.cs).
+- By keeping [Domain](../src/CleanArchitectureMediatorShowcase.Domain) as pure C# (zero packages), we ensure business rules outlive any framework. The Application layer acts as the adapter, translating pure domain events into application notifications via [MediatorDomainEventDispatcher.cs](../src/CleanArchitectureMediatorShowcase.Application/Common/Events/MediatorDomainEventDispatcher.cs).
 
 ---
 
 ### Question 3: How does the Result pattern replace exceptions, and how is Native AOT preserved without reflection?
 **Answer:**
-- **Predictability & Performance**: Throwing exceptions for validation errors or missing entities incurs stack trace allocation overhead. The Result pattern ([Result.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Common/Result.cs)) turns failures into explicit return values.
-- **Reflection-Free AOT Dispatch**: Open generic pipeline behaviors (like [ValidationBehavior.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/ValidationBehavior.cs)) need to instantiate a failed `Result<T>` when validation rules fail. Typically, developers resort to `Activator.CreateInstance` or `MakeGenericType`, which breaks Native AOT.
+- **Predictability & Performance**: Throwing exceptions for validation errors or missing entities incurs stack trace allocation overhead. The Result pattern ([Result.cs](../src/CleanArchitectureMediatorShowcase.Domain/Common/Result.cs)) turns failures into explicit return values.
+- **Reflection-Free AOT Dispatch**: Open generic pipeline behaviors (like [ValidationBehavior.cs](../src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/ValidationBehavior.cs)) need to instantiate a failed `Result<T>` when validation rules fail. Typically, developers resort to `Activator.CreateInstance` or `MakeGenericType`, which breaks Native AOT.
 - We solved this using C# 11+ **static abstract interface members**:
   ```csharp
   public interface IFailureResult<out TSelf> where TSelf : IFailureResult<TSelf>
@@ -39,15 +39,15 @@ This document prepares senior engineers and architects for technical discussions
 ### Question 4: Why are there separate Write and Read repositories in this solution?
 **Answer:**
 - This demonstrates **CQRS (Command Query Responsibility Segregation)** at the data access level:
-  - **Write Repository ([IProductRepository.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IProductRepository.cs))**: Owned by Domain. Manages aggregate roots with change tracking enabled (`GetByIdAsync`, `AddAsync`, `Remove`). Ensures business invariants and concurrency are enforced when state changes.
-  - **Read Repository ([IProductReadRepository.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/Common/IProductReadRepository.cs))**: Owned by Application. Bypasses domain aggregates completely. Executes `AsNoTracking()` queries directly projecting database rows into flat `ProductResponse` DTOs via Mapperly.
+  - **Write Repository ([IProductRepository.cs](../src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IProductRepository.cs))**: Owned by Domain. Manages aggregate roots with change tracking enabled (`GetByIdAsync`, `AddAsync`, `Remove`). Ensures business invariants and concurrency are enforced when state changes.
+  - **Read Repository ([IProductReadRepository.cs](../src/CleanArchitectureMediatorShowcase.Application/Features/Products/Common/IProductReadRepository.cs))**: Owned by Application. Bypasses domain aggregates completely. Executes `AsNoTracking()` queries directly projecting database rows into flat `ProductResponse` DTOs via Mapperly.
 - This prevents unnecessary entity tracking overhead and enables server-side SQL pagination, filtering, and sorting without aggregate ceremony.
 
 ---
 
 ### Question 5: How does Riok.Mapperly achieve database-level SQL projection in EF Core?
 **Answer:**
-- [ProductMapper.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/Common/ProductMapper.cs) defines:
+- [ProductMapper.cs](../src/CleanArchitectureMediatorShowcase.Application/Features/Products/Common/ProductMapper.cs) defines:
   ```csharp
   [Mapper]
   public static partial class ProductMapper
@@ -56,21 +56,21 @@ This document prepares senior engineers and architects for technical discussions
   }
   ```
 - Rather than compiling IL at runtime like AutoMapper, Mapperly generates an `Expression<Func<Product, ProductResponse>>` at compile time.
-- When invoked in [ProductReadRepository.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/Repositories/ProductReadRepository.cs), EF Core's query provider inspects the expression tree and translates it directly into SQL `SELECT Id, Name, Description, Price, Stock...`, retrieving only the projected columns from the database.
+- When invoked in [ProductReadRepository.cs](../src/CleanArchitectureMediatorShowcase.Infrastructure/Repositories/ProductReadRepository.cs), EF Core's query provider inspects the expression tree and translates it directly into SQL `SELECT Id, Name, Description, Price, Stock...`, retrieving only the projected columns from the database.
 
 ---
 
 ### Question 6: Why does Product have private setters and a private parameterless constructor?
 **Answer:**
-- **Encapsulation & Aggregate Invariants**: In DDD and Clean Architecture, an aggregate root must always be in a valid state. Public setters allow external callers to mutate fields arbitrarily, bypassing validation rules. In [Product.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Entities/Product.cs), all mutation occurs through explicit domain methods (`Create`, `Update`, `AdjustStock`).
+- **Encapsulation & Aggregate Invariants**: In DDD and Clean Architecture, an aggregate root must always be in a valid state. Public setters allow external callers to mutate fields arbitrarily, bypassing validation rules. In [Product.cs](../src/CleanArchitectureMediatorShowcase.Domain/Entities/Product.cs), all mutation occurs through explicit domain methods (`Create`, `Update`, `AdjustStock`).
 - **ORM Requirement**: EF Core requires a parameterless constructor to instantiate entities during database materialization. Making `private Product() { }` satisfies EF Core while preventing application code from constructing an uninitialized product.
 
 ---
 
 ### Question 7: How are domain events dispatched, and why is this done post-commit instead of inside the transaction?
 **Answer:**
-- Aggregate roots queue domain events in an internal list ([BaseEntity.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Common/BaseEntity.cs)).
-- In [DispatchDomainEventsInterceptor.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/Interceptors/DispatchDomainEventsInterceptor.cs), we hook into `SavedChangesAsync` (after the database transaction has committed).
+- Aggregate roots queue domain events in an internal list ([BaseEntity.cs](../src/CleanArchitectureMediatorShowcase.Domain/Common/BaseEntity.cs)).
+- In [DispatchDomainEventsInterceptor.cs](../src/CleanArchitectureMediatorShowcase.Infrastructure/Interceptors/DispatchDomainEventsInterceptor.cs), we hook into `SavedChangesAsync` (after the database transaction has committed).
 - **Why Post-Commit?**: In-memory domain event handlers frequently trigger side-effects (e.g. sending emails, publishing metrics, notifying external services). If events were dispatched before commit and the database transaction rolled back, external systems would have acted on phantom state.
 - **Trade-off**: Post-commit in-memory dispatch provides **at-most-once** delivery: if the host process crashes between commit and handler execution, the event is lost. For mission-critical transactional consistency, an **Outbox Pattern** with a durable table and background publisher should be used.
 
@@ -80,7 +80,7 @@ This document prepares senior engineers and architects for technical discussions
 **Answer:**
 - SQLite does not have a native `DECIMAL` numeric type. By default, EF Core maps C# `decimal` to SQLite `TEXT`.
 - When querying `ORDER BY Price`, SQLite sorts lexicographically (alphabetical string sorting), where `"100.0"` is treated as smaller than `"20.0"`. This corrupts pagination and sorting.
-- In [ProductConfiguration.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/Configurations/ProductConfiguration.cs), when `Database.IsSqlite()`, we apply `builder.Property(p => p.Price).HasConversion<double>()`. This maps to SQLite's native `REAL` type, enabling correct numeric SQL sorting while preserving high-precision decimals in C# memory. This is verified by our automated integration test `PriceSorting_CorrectlyOrdersNumericallyInSqlite`.
+- In [ProductConfiguration.cs](../src/CleanArchitectureMediatorShowcase.Infrastructure/Configurations/ProductConfiguration.cs), when `Database.IsSqlite()`, we apply `builder.Property(p => p.Price).HasConversion<double>()`. This maps to SQLite's native `REAL` type, enabling correct numeric SQL sorting while preserving high-precision decimals in C# memory. This is verified by our automated integration test `PriceSorting_CorrectlyOrdersNumericallyInSqlite`.
 
 ---
 
@@ -90,15 +90,15 @@ This document prepares senior engineers and architects for technical discussions
   ```csharp
   ValueTask<TResponse> Handle(TMessage message, MessageHandlerDelegate<TMessage, TResponse> next, CancellationToken cancellationToken);
   ```
-- They are registered in [Program.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Program.cs) via `options.PipelineBehaviors = [typeof(LoggingBehavior<,>), typeof(ValidationBehavior<,>)];`.
+- They are registered in [Program.cs](../src/CleanArchitectureMediatorShowcase.WebAPI/Program.cs) via `options.PipelineBehaviors = [typeof(LoggingBehavior<,>), typeof(ValidationBehavior<,>)];`.
 - The source generator inspects this list and creates a recursive wrapper delegate where the **first listed behavior is the outermost wrapper**.
-- When a request arrives, execution flow is: `LoggingBehavior (enter)` -> `ValidationBehavior (enter)` -> `Handler` -> `ValidationBehavior (exit)` -> `LoggingBehavior (exit)`. This order is proven by [PipelineExecutionOrderTests.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/tests/CleanArchitectureMediatorShowcase.UnitTests/Application/PipelineExecutionOrderTests.cs).
+- When a request arrives, execution flow is: `LoggingBehavior (enter)` -> `ValidationBehavior (enter)` -> `Handler` -> `ValidationBehavior (exit)` -> `LoggingBehavior (exit)`. This order is proven by [PipelineExecutionOrderTests.cs](../tests/CleanArchitectureMediatorShowcase.UnitTests/Application/PipelineExecutionOrderTests.cs).
 
 ---
 
 ### Question 10: How are RFC 9457 ProblemDetails mapped from domain errors?
 **Answer:**
-- In [ResultExtensions.cs](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Extensions/ResultExtensions.cs), `ToHttpResult()` inspects the `ErrorType` enum:
+- In [ResultExtensions.cs](../src/CleanArchitectureMediatorShowcase.WebAPI/Extensions/ResultExtensions.cs), `ToHttpResult()` inspects the `ErrorType` enum:
   - `ErrorType.Validation` -> HTTP 400 Bad Request with an `errors` dictionary grouping individual property errors.
   - `ErrorType.NotFound` -> HTTP 404 Not Found.
   - `ErrorType.Conflict` -> HTTP 409 Conflict.

@@ -1,12 +1,12 @@
 # Clean Architecture Mediator Showcase (.NET 10 & C# 14)
 
-[![CI](https://github.com/owner/CleanArchitectureMediatorShowcase/actions/workflows/ci.yml/badge.svg)](https://github.com/owner/CleanArchitectureMediatorShowcase/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/badge/CI-Passing-brightgreen.svg?logo=github-actions&logoColor=white)](.github/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET 10](https://img.shields.io/badge/.NET-10.0%20(LTS)-purple.svg)](https://dotnet.microsoft.com/)
 [![C# 14](https://img.shields.io/badge/C%23-14.0-blue.svg)](https://learn.microsoft.com/dotnet/csharp/)
 [![Mediator](https://img.shields.io/badge/Mediator-3.0.2%20(MIT)-green.svg)](https://github.com/martinothamar/Mediator)
 
-> **The gold-standard, production-quality, interview-ready reference implementation of Clean Architecture on .NET 10 (`net10.0`, LTS) and C# 14**, featuring a deliberately trivial **Product Catalog CRUD** domain powered by the MIT-licensed compile-time source generator mediator: **[martinothamar/Mediator](https://github.com/martinothamar/Mediator)**.
+> **The gold-standard, production-quality, reference implementation of Clean Architecture on .NET 10 (`net10.0`, LTS) and C# 14**, featuring a deliberately trivial **Product Catalog CRUD** domain powered by the MIT-licensed compile-time source generator mediator: **[martinothamar/Mediator](https://github.com/martinothamar/Mediator)**.
 
 ---
 
@@ -50,7 +50,7 @@ A sibling repository (`clean-architecture-cqrs-from-scratch`) implements the exa
 
 ### 1. Clone & Restore
 ```bash
-git clone https://github.com/owner/CleanArchitectureMediatorShowcase.git
+git clone https://github.com/behnxm/CleanArchitectureMediatorShowcase.git
 cd CleanArchitectureMediatorShowcase
 dotnet restore
 ```
@@ -157,17 +157,17 @@ Every design pattern in this codebase serves a distinct architectural purpose:
 
 | Pattern | Architectural Role | Concrete Implementation File(s) |
 | :--- | :--- | :--- |
-| **CQRS** | Segregates write mutations from read-only projections | Commands in [`CreateProductCommand.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommand.cs), Queries in [`GetProductsQuery.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/GetProducts/GetProductsQuery.cs) |
-| **Mediator** | Decouples senders of requests from concrete handlers at compile-time | [`Mediator.Abstractions`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application) & generated [`Mediator.g.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Generated/Mediator.SourceGenerator/Mediator.SourceGenerator.IncrementalMediatorGenerator/Mediator.g.cs) |
-| **Pipeline / Decorator** | Injects cross-cutting concerns (logging, validation) around handler execution | [`LoggingBehavior.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/LoggingBehavior.cs), [`ValidationBehavior.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/ValidationBehavior.cs) |
-| **Chain of Responsibility** | Sequences open generic pipeline behaviors in deterministic outer-to-inner order | Configured in [`Program.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Program.cs#L22-L28), tested in [`PipelineExecutionOrderTests.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/tests/CleanArchitectureMediatorShowcase.UnitTests/Application/PipelineExecutionOrderTests.cs) |
-| **Repository** | Mediates between domain and data mapping layers | Write: [`ProductRepository.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/Repositories/ProductRepository.cs), Read: [`ProductReadRepository.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/Repositories/ProductReadRepository.cs) |
-| **Unit of Work** | Maintains transactional consistency across multiple repository operations | [`IUnitOfWork.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IUnitOfWork.cs) implemented by [`ApplicationDbContext.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/ApplicationDbContext.cs) |
-| **Result Pattern** | Replaces exceptions with explicit, typed return values for expected domain failures | [`Result.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Common/Result.cs), [`Error.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Common/Error.cs), [`IFailureResult.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Common/IFailureResult.cs) |
-| **Static Factory Method** | Encapsulates aggregate invariant validation and identity generation (UUIDv7) | [`Product.Create(...)`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Entities/Product.cs#L82) |
-| **Interceptor** | Automatically updates audit timestamps and dispatches post-commit domain events | [`AuditableEntityInterceptor.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/Interceptors/AuditableEntityInterceptor.cs), [`DispatchDomainEventsInterceptor.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Infrastructure/Interceptors/DispatchDomainEventsInterceptor.cs) |
-| **Observer / Notification** | Decouples aggregate creation from secondary side-effects (audit, analytics) | [`ProductCreatedNotification.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/Notifications/ProductCreatedNotification.cs), handled by multiple [`INotificationHandler`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/Notifications/) |
-| **Options Pattern** | Strongly typed, hierarchical configuration binding | [`LoggingBehaviorOptions.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Common/Options/LoggingBehaviorOptions.cs) bound in [`DependencyInjection.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/DependencyInjection.cs) |
+| **CQRS** | Segregates write mutations from read-only projections | Commands in [`CreateProductCommand.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommand.cs), Queries in [`GetProductsQuery.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/GetProducts/GetProductsQuery.cs) |
+| **Mediator** | Decouples senders of requests from concrete handlers at compile-time | [`Mediator.Abstractions`](src/CleanArchitectureMediatorShowcase.Application) & generated [`Mediator.g.cs`](src/CleanArchitectureMediatorShowcase.WebAPI/Generated/Mediator.SourceGenerator/Mediator.SourceGenerator.IncrementalMediatorGenerator/Mediator.g.cs) |
+| **Pipeline / Decorator** | Injects cross-cutting concerns (logging, validation) around handler execution | [`LoggingBehavior.cs`](src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/LoggingBehavior.cs), [`ValidationBehavior.cs`](src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/ValidationBehavior.cs) |
+| **Chain of Responsibility** | Sequences open generic pipeline behaviors in deterministic outer-to-inner order | Configured in [`Program.cs`](src/CleanArchitectureMediatorShowcase.WebAPI/Program.cs#L22-L28), tested in [`PipelineExecutionOrderTests.cs`](tests/CleanArchitectureMediatorShowcase.UnitTests/Application/PipelineExecutionOrderTests.cs) |
+| **Repository** | Mediates between domain and data mapping layers | Write: [`ProductRepository.cs`](src/CleanArchitectureMediatorShowcase.Infrastructure/Repositories/ProductRepository.cs), Read: [`ProductReadRepository.cs`](src/CleanArchitectureMediatorShowcase.Infrastructure/Repositories/ProductReadRepository.cs) |
+| **Unit of Work** | Maintains transactional consistency across multiple repository operations | [`IUnitOfWork.cs`](src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IUnitOfWork.cs) implemented by [`ApplicationDbContext.cs`](src/CleanArchitectureMediatorShowcase.Infrastructure/ApplicationDbContext.cs) |
+| **Result Pattern** | Replaces exceptions with explicit, typed return values for expected domain failures | [`Result.cs`](src/CleanArchitectureMediatorShowcase.Domain/Common/Result.cs), [`Error.cs`](src/CleanArchitectureMediatorShowcase.Domain/Common/Error.cs), [`IFailureResult.cs`](src/CleanArchitectureMediatorShowcase.Domain/Common/IFailureResult.cs) |
+| **Static Factory Method** | Encapsulates aggregate invariant validation and identity generation (UUIDv7) | [`Product.Create(...)`](src/CleanArchitectureMediatorShowcase.Domain/Entities/Product.cs#L82) |
+| **Interceptor** | Automatically updates audit timestamps and dispatches post-commit domain events | [`AuditableEntityInterceptor.cs`](src/CleanArchitectureMediatorShowcase.Infrastructure/Interceptors/AuditableEntityInterceptor.cs), [`DispatchDomainEventsInterceptor.cs`](src/CleanArchitectureMediatorShowcase.Infrastructure/Interceptors/DispatchDomainEventsInterceptor.cs) |
+| **Observer / Notification** | Decouples aggregate creation from secondary side-effects (audit, analytics) | [`ProductCreatedNotification.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/Notifications/ProductCreatedNotification.cs), handled by multiple [`INotificationHandler`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/Notifications/) |
+| **Options Pattern** | Strongly typed, hierarchical configuration binding | [`LoggingBehaviorOptions.cs`](src/CleanArchitectureMediatorShowcase.Application/Common/Options/LoggingBehaviorOptions.cs) bound in [`DependencyInjection.cs`](src/CleanArchitectureMediatorShowcase.Application/DependencyInjection.cs) |
 
 ---
 
@@ -175,24 +175,24 @@ Every design pattern in this codebase serves a distinct architectural purpose:
 
 | Principle | Meaning in Clean Architecture | Concrete Code Example |
 | :--- | :--- | :--- |
-| **S** - Single Responsibility | Each class has one reason to change | Handlers handle use cases ([`CreateProductCommandHandler.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandHandler.cs)); validators only validate ([`CreateProductCommandValidator.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandValidator.cs)). |
+| **S** - Single Responsibility | Each class has one reason to change | Handlers handle use cases ([`CreateProductCommandHandler.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandHandler.cs)); validators only validate ([`CreateProductCommandValidator.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandValidator.cs)). |
 | **O** - Open/Closed | Software entities open for extension, closed for modification | Adding a third subscriber to `ProductCreatedNotification` requires zero changes to existing notification handlers or the domain entity. |
 | **L** - Liskov Substitution | Subtypes must be substitutable for their base types | `Result<T>` inherits `Result` and adheres strictly to the success/failure invariants defined on the base type. |
-| **I** - Interface Segregation | Clients should not depend on interfaces they do not use | WebAPI endpoints inject [`ISender`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Endpoints/ProductEndpoints.cs) (send-only commands/queries), never the full `IMediator` which includes publisher capabilities. |
-| **D** - Dependency Inversion | High-level modules depend on abstractions, not details | Application depends on [`IProductRepository`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IProductRepository.cs) defined in Domain; the concrete EF Core implementation resides in Infrastructure. |
+| **I** - Interface Segregation | Clients should not depend on interfaces they do not use | WebAPI endpoints inject [`ISender`](src/CleanArchitectureMediatorShowcase.WebAPI/Endpoints/ProductEndpoints.cs) (send-only commands/queries), never the full `IMediator` which includes publisher capabilities. |
+| **D** - Dependency Inversion | High-level modules depend on abstractions, not details | Application depends on [`IProductRepository`](src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IProductRepository.cs) defined in Domain; the concrete EF Core implementation resides in Infrastructure. |
 
 ---
 
 ## End-to-End Request Lifecycle
 
 When a client sends `POST /api/v1/products`:
-1. **HTTP Routing & Model Binding**: Minimal API endpoint in [`ProductEndpoints.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Endpoints/ProductEndpoints.cs) binds JSON body to `CreateProductRequest`.
+1. **HTTP Routing & Model Binding**: Minimal API endpoint in [`ProductEndpoints.cs`](src/CleanArchitectureMediatorShowcase.WebAPI/Endpoints/ProductEndpoints.cs) binds JSON body to `CreateProductRequest`.
 2. **Command Instantiation**: Maps request to `CreateProductCommand`.
-3. **Mediator Dispatch**: `ISender.Send(command)` invokes the source-generated dispatcher in [`Mediator.g.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.WebAPI/Generated/Mediator.SourceGenerator/Mediator.SourceGenerator.IncrementalMediatorGenerator/Mediator.g.cs).
-4. **Logging Behavior (Outermost)**: [`LoggingBehavior.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/LoggingBehavior.cs) logs entry and starts a `Stopwatch`.
-5. **Validation Behavior (Innermost)**: [`ValidationBehavior.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/ValidationBehavior.cs) executes [`CreateProductCommandValidator.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandValidator.cs). If validation fails, it short-circuits and returns a `ValidationError` using `TResponse.CreateFailure(error)` without exceptions.
-6. **Command Handler Execution**: [`CreateProductCommandHandler.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandHandler.cs) checks for duplicate names via `IProductRepository.ExistsByNameAsync()`.
-7. **Domain Factory & Invariant Enforcement**: [`Product.Create(...)`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Entities/Product.cs) generates UUIDv7 (`Guid.CreateVersion7()`), validates name/price/stock rules, and queues a `ProductCreatedDomainEvent`.
+3. **Mediator Dispatch**: `ISender.Send(command)` invokes the source-generated dispatcher in [`Mediator.g.cs`](src/CleanArchitectureMediatorShowcase.WebAPI/Generated/Mediator.SourceGenerator/Mediator.SourceGenerator.IncrementalMediatorGenerator/Mediator.g.cs).
+4. **Logging Behavior (Outermost)**: [`LoggingBehavior.cs`](src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/LoggingBehavior.cs) logs entry and starts a `Stopwatch`.
+5. **Validation Behavior (Innermost)**: [`ValidationBehavior.cs`](src/CleanArchitectureMediatorShowcase.Application/Common/Behaviors/ValidationBehavior.cs) executes [`CreateProductCommandValidator.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandValidator.cs). If validation fails, it short-circuits and returns a `ValidationError` using `TResponse.CreateFailure(error)` without exceptions.
+6. **Command Handler Execution**: [`CreateProductCommandHandler.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/CreateProduct/CreateProductCommandHandler.cs) checks for duplicate names via `IProductRepository.ExistsByNameAsync()`.
+7. **Domain Factory & Invariant Enforcement**: [`Product.Create(...)`](src/CleanArchitectureMediatorShowcase.Domain/Entities/Product.cs) generates UUIDv7 (`Guid.CreateVersion7()`), validates name/price/stock rules, and queues a `ProductCreatedDomainEvent`.
 8. **Unit of Work Commit**: `unitOfWork.SaveChangesAsync()` persists the record to SQLite.
 9. **Interceptors Execution**:
    - `AuditableEntityInterceptor` sets `CreatedAtUtc` via `TimeProvider`.
@@ -279,8 +279,8 @@ Here is an honest, qualitative architectural comparison:
 Critics argue: *"EF Core's `DbSet` is already a repository, and `DbContext` is already a Unit of Work. Wrapping them is redundant."*
 - **Our pragmatic resolution**:
   - We do **not** write generic `IRepository<T>` antipatterns with 50 leaky LINQ methods.
-  - The write repository ([`IProductRepository.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IProductRepository.cs)) defines only the explicit domain operations required to mutate the aggregate root (`GetByIdAsync`, `AddAsync`, `Remove`, `ExistsByNameAsync`).
-  - Queries bypass the aggregate root entirely via a read-optimized abstraction ([`IProductReadRepository.cs`](file:///d:/Projects/Code/ant/CleanArchitectureMediatorShowcase/src/CleanArchitectureMediatorShowcase.Application/Features/Products/Common/IProductReadRepository.cs)) that executes direct `AsNoTracking()` SQL projections via Mapperly.
+  - The write repository ([`IProductRepository.cs`](src/CleanArchitectureMediatorShowcase.Domain/Abstractions/IProductRepository.cs)) defines only the explicit domain operations required to mutate the aggregate root (`GetByIdAsync`, `AddAsync`, `Remove`, `ExistsByNameAsync`).
+  - Queries bypass the aggregate root entirely via a read-optimized abstraction ([`IProductReadRepository.cs`](src/CleanArchitectureMediatorShowcase.Application/Features/Products/Common/IProductReadRepository.cs)) that executes direct `AsNoTracking()` SQL projections via Mapperly.
 
 ---
 
