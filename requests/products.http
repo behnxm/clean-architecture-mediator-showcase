@@ -1,0 +1,96 @@
+@baseUrl = http://localhost:5000
+
+### 1. Health Checks - Liveness Probe
+GET {{baseUrl}}/health
+Accept: application/json
+
+### 2. Health Checks - Readiness Probe (Database Connectivity)
+GET {{baseUrl}}/health/ready
+Accept: application/json
+
+### 3. OpenAPI v3 Specification
+GET {{baseUrl}}/openapi/v1.json
+Accept: application/json
+
+### 4. Create Product (POST)
+# @name createProduct
+POST {{baseUrl}}/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard Pro",
+  "description": "Ergonomic mechanical keyboard with hot-swappable switches and PBT keycaps.",
+  "price": 149.99,
+  "stock": 25
+}
+
+### 5. Extract Created Product ID
+@productId = {{createProduct.response.body.$.id}}
+
+### 6. Get Product by ID (GET)
+GET {{baseUrl}}/api/v1/products/{{productId}}
+Accept: application/json
+
+### 7. List Products - Default Pagination (GET)
+GET {{baseUrl}}/api/v1/products?page=1&pageSize=10
+Accept: application/json
+
+### 8. Search & Sort Products (GET)
+# Filter by searchTerm, sort by price descending
+GET {{baseUrl}}/api/v1/products?searchTerm=Keyboard&page=1&pageSize=10&sortBy=price&sortDirection=desc
+Accept: application/json
+
+### 9. Update Product Details (PUT)
+PUT {{baseUrl}}/api/v1/products/{{productId}}
+Content-Type: application/json
+
+{
+  "name": "Mechanical Keyboard Pro (V2)",
+  "description": "Upgraded with sound dampening foam and factory-lubed switches.",
+  "price": 169.99
+}
+
+### 10. Adjust Product Stock - Positive Delta (PATCH)
+PATCH {{baseUrl}}/api/v1/products/{{productId}}/stock
+Content-Type: application/json
+
+{
+  "delta": 15
+}
+
+### 11. Adjust Product Stock - Negative Delta (PATCH)
+PATCH {{baseUrl}}/api/v1/products/{{productId}}/stock
+Content-Type: application/json
+
+{
+  "delta": -5
+}
+
+### 12. Delete Product (DELETE)
+DELETE {{baseUrl}}/api/v1/products/{{productId}}
+
+### 13. Verify Deletion - Not Found (GET 404)
+GET {{baseUrl}}/api/v1/products/{{productId}}
+Accept: application/problem+json
+
+### 14. Validation Error Demo - Invalid Input (POST 400)
+POST {{baseUrl}}/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": "Missing name and negative price/stock.",
+  "price": -10.00,
+  "stock": -5
+}
+
+### 15. Conflict Error Demo - Duplicate Name (POST 409)
+POST {{baseUrl}}/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "Precision Wireless Mouse",
+  "description": "Attempting to create duplicate seeded item.",
+  "price": 79.99,
+  "stock": 10
+}

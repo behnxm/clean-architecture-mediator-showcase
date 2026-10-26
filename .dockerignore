@@ -1,0 +1,12 @@
+**/.git
+**/.vs
+**/.vscode
+**/.idea
+**/bin
+**/obj
+**/Generated
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/TestResults
+**/scratch

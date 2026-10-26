@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build, Format, Test & Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore CleanArchitectureMediatorShowcase.slnx
+
+      - name: Verify code formatting
+        run: dotnet format --verify-no-changes
+
+      - name: Build solution (Release)
+        run: dotnet build CleanArchitectureMediatorShowcase.slnx -c Release --no-restore
+
+      - name: Run test suite (Release)
+        run: dotnet test CleanArchitectureMediatorShowcase.slnx -c Release --no-build
+
+      - name: Check for vulnerable packages
+        run: |
+          vulnerabilities=$(dotnet list package --vulnerable --include-transitive)
+          echo "$vulnerabilities"
+          if echo "$vulnerabilities" | grep -q "has the following vulnerable packages"; then
+            echo "::error::Vulnerable packages detected in dependency tree!"
+            exit 1
+          fi
